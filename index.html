@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SMS Readiness Assessment | PAI Consulting</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1a2744;--navy-light:#243354;--slate:#3d4f6f;
+  --sky:#4a90d9;--sky-light:#6ba3e0;
+  --gold:#d4a843;--gold-light:#e0bc6a;
+  --white:#ffffff;--off-white:#f4f6f9;--gray-100:#e8ecf1;
+  --gray-200:#d1d8e3;--gray-400:#8d99ae;--gray-600:#4a5568;--gray-800:#2d3748;
+  --red:#c0392b;--red-bg:#fdeaea;--red-border:#e6a0a0;
+  --amber:#d4a017;--amber-bg:#fef9e7;--amber-border:#e0c97a;
+  --blue:#2980b9;--blue-bg:#e8f0fe;--blue-border:#a0c4e8;
+  --green:#27ae60;--green-bg:#e8f8f0;--green-border:#8fd4b0;
+  --font-sans:'Segoe UI',system-ui,-apple-system,sans-serif;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.1);
+  --shadow-md:0 4px 12px rgba(0,0,0,.12);
+  --shadow-lg:0 8px 24px rgba(0,0,0,.15);
+  --radius:8px;--radius-lg:12px;
+}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:var(--font-sans);color:var(--gray-800);background:var(--off-white);line-height:1.6;min-height:100vh}
+
+/* Header */
+.header{background:var(--navy);color:var(--white);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow-md)}
+.header-brand{display:flex;align-items:center;gap:.75rem}
+.header-logo{font-size:1.5rem;font-weight:700;letter-spacing:.5px}
+.header-logo span{color:var(--gold)}
+.header-tagline{font-size:.8rem;color:var(--gray-400);margin-top:2px}
+.header-badge{background:var(--sky);color:var(--white);font-size:.7rem;font-weight:600;padding:.25rem .75rem;border-radius:20px;letter-spacing:.5px;text-transform:uppercase}
+
+/* Layout */
+.container{max-width:860px;margin:0 auto;padding:1.5rem 1rem}
+@media(min-width:640px){.container{padding:2rem 1.5rem}}
+
+/* Progress bar */
+.progress-wrap{background:var(--white);border-radius:var(--radius-lg);padding:1.25rem 1.5rem;margin-bottom:1.5rem;box-shadow:var(--shadow-sm)}
+.progress-label{display:flex;justify-content:space-between;font-size:.85rem;color:var(--gray-600);margin-bottom:.5rem;font-weight:500}
+.progress-track{height:10px;background:var(--gray-100);border-radius:5px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--sky),var(--sky-light));border-radius:5px;transition:width .4s ease}
+
+/* Sections */
+.section{background:var(--white);border-radius:var(--radius-lg);padding:1.5rem;margin-bottom:1.25rem;box-shadow:var(--shadow-sm);border:1px solid var(--gray-100)}
+@media(min-width:640px){.section{padding:2rem}}
+.section.active{border-color:var(--sky)}
+.section.completed{border-color:var(--green);opacity:.95}
+.section-number{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--navy);color:var(--white);font-size:.8rem;font-weight:700;margin-right:.5rem}
+.section-title{font-size:1.15rem;font-weight:700;color:var(--navy);margin-bottom:.25rem;display:flex;align-items:center}
+.section-desc{font-size:.85rem;color:var(--gray-600);margin-bottom:1.25rem;padding-left:2.35rem}
+
+/* Form elements */
+.field{margin-bottom:1.25rem}
+.field:last-child{margin-bottom:0}
+.field-label{display:block;font-size:.9rem;font-weight:600;color:var(--gray-800);margin-bottom:.5rem}
+.field-label .weight-badge{font-size:.65rem;font-weight:700;padding:2px 6px;border-radius:3px;margin-left:.5rem;vertical-align:middle;text-transform:uppercase;letter-spacing:.5px}
+.weight-badge.high{background:#fce4e4;color:var(--red)}
+.weight-badge.med{background:var(--amber-bg);color:#9a7b0a}
+.weight-badge.low{background:var(--gray-100);color:var(--gray-600)}
+.field-citation{font-size:.75rem;color:var(--gray-400);margin-top:2px;font-style:italic}
+
+/* Radio group for maturity scale */
+.maturity-group{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+@media(min-width:640px){.maturity-group{grid-template-columns:repeat(4,1fr)}}
+.maturity-option{position:relative}
+.maturity-option input{position:absolute;opacity:0;pointer-events:none}
+.maturity-option label{display:block;padding:.6rem .5rem;border:2px solid var(--gray-200);border-radius:var(--radius);text-align:center;cursor:pointer;font-size:.8rem;font-weight:500;transition:all .2s;background:var(--white);color:var(--gray-600)}
+.maturity-option label:hover{border-color:var(--sky-light);background:var(--blue-bg)}
+.maturity-option input:checked+label{border-color:var(--sky);background:var(--blue-bg);color:var(--navy);font-weight:600}
+.maturity-option label .score-num{display:block;font-size:1.1rem;font-weight:700;margin-bottom:2px;color:inherit}
+
+/* Text inputs */
+.input,.select-input{width:100%;padding:.6rem .75rem;border:2px solid var(--gray-200);border-radius:var(--radius);font-size:.9rem;font-family:var(--font-sans);transition:border-color .2s;background:var(--white);color:var(--gray-800)}
+.input:focus,.select-input:focus{outline:none;border-color:var(--sky)}
+.input-row{display:grid;grid-template-columns:1fr;gap:1rem}
+@media(min-width:640px){.input-row{grid-template-columns:1fr 1fr}}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.7rem 1.5rem;border:none;border-radius:var(--radius);font-size:.95rem;font-weight:600;cursor:pointer;transition:all .2s;font-family:var(--font-sans)}
+.btn-primary{background:var(--sky);color:var(--white)}
+.btn-primary:hover{background:var(--slate)}
+.btn-secondary{background:var(--white);color:var(--navy);border:2px solid var(--gray-200)}
+.btn-secondary:hover{border-color:var(--sky);background:var(--blue-bg)}
+.btn-gold{background:var(--gold);color:var(--white)}
+.btn-gold:hover{background:var(--gold-light)}
+.btn-lg{padding:.85rem 2rem;font-size:1.05rem}
+.nav-buttons{display:flex;justify-content:space-between;margin-top:1.5rem;gap:1rem}
+
+/* Welcome screen */
+.welcome{text-align:center;padding:2rem 1rem}
+.welcome h1{font-size:1.75rem;color:var(--navy);margin-bottom:.5rem}
+@media(min-width:640px){.welcome h1{font-size:2.25rem}}
+.welcome p{color:var(--gray-600);max-width:600px;margin:0 auto 1.5rem;font-size:1rem;line-height:1.7}
+.welcome-features{display:grid;grid-template-columns:1fr;gap:1rem;max-width:560px;margin:1.5rem auto;text-align:left}
+@media(min-width:640px){.welcome-features{grid-template-columns:1fr 1fr}}
+.feature-card{background:var(--off-white);border:1px solid var(--gray-100);border-radius:var(--radius);padding:1rem;display:flex;gap:.75rem;align-items:flex-start}
+.feature-icon{font-size:1.5rem;line-height:1}
+.feature-card h3{font-size:.9rem;color:var(--navy);margin-bottom:2px}
+.feature-card p{font-size:.8rem;color:var(--gray-600);line-height:1.4}
+.welcome-note{font-size:.8rem;color:var(--gray-400);margin-top:1.5rem}
+
+/* Results */
+.results-header{text-align:center;padding:1.5rem 0;margin-bottom:1.5rem;border-bottom:1px solid var(--gray-100)}
+.results-header h2{font-size:1.5rem;color:var(--navy);margin-bottom:.5rem}
+.overall-score{font-size:3.5rem;font-weight:800;margin:.5rem 0}
+.tier-badge{display:inline-block;padding:.4rem 1.25rem;border-radius:20px;font-size:.95rem;font-weight:700;letter-spacing:.5px}
+.tier-critical{background:var(--red-bg);color:var(--red);border:2px solid var(--red-border)}
+.tier-developing{background:var(--amber-bg);color:var(--amber);border:2px solid var(--amber-border)}
+.tier-maturing{background:var(--blue-bg);color:var(--blue);border:2px solid var(--blue-border)}
+.tier-advanced{background:var(--green-bg);color:var(--green);border:2px solid var(--green-border)}
+
+/* Pillar chart */
+.pillar-chart{margin:1.5rem 0}
+.pillar-bar-row{margin-bottom:1rem}
+.pillar-bar-label{display:flex;justify-content:space-between;font-size:.85rem;font-weight:600;color:var(--gray-800);margin-bottom:4px}
+.pillar-bar-track{height:24px;background:var(--gray-100);border-radius:4px;overflow:hidden;position:relative}
+.pillar-bar-fill{height:100%;border-radius:4px;transition:width .6s ease;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:.75rem;font-weight:700;color:var(--white);min-width:0}
+
+/* Gap list */
+.gap-list{margin:1.5rem 0}
+.gap-item{display:flex;gap:.75rem;padding:.85rem 1rem;border-radius:var(--radius);margin-bottom:.5rem;border-left:4px solid;align-items:flex-start}
+.gap-item.priority-high{background:var(--red-bg);border-color:var(--red)}
+.gap-item.priority-med{background:var(--amber-bg);border-color:var(--amber)}
+.gap-item.priority-low{background:var(--blue-bg);border-color:var(--blue)}
+.gap-rank{font-weight:800;font-size:.9rem;min-width:24px;color:var(--gray-600)}
+.gap-body{flex:1}
+.gap-question{font-size:.88rem;font-weight:600;color:var(--gray-800);margin-bottom:2px}
+.gap-meta{font-size:.75rem;color:var(--gray-600)}
+.gap-meta span{margin-right:.75rem}
+
+/* Upsell section */
+.upsell-box{background:linear-gradient(135deg,var(--navy),var(--navy-light));color:var(--white);border-radius:var(--radius-lg);padding:2rem;margin:2rem 0;text-align:center}
+.upsell-box h3{font-size:1.2rem;margin-bottom:.5rem;color:var(--gold)}
+.upsell-box p{font-size:.95rem;color:var(--gray-200);margin-bottom:1.25rem;line-height:1.6}
+.upsell-features{display:flex;flex-wrap:wrap;justify-content:center;gap:.75rem;margin-bottom:1.5rem}
+.upsell-feature{background:rgba(255,255,255,.1);padding:.35rem .75rem;border-radius:20px;font-size:.8rem;color:var(--gray-200)}
+.upsell-lock{font-size:.75rem;color:var(--gray-400);margin-top:.75rem}
+
+/* CTA */
+.cta-box{background:var(--white);border:2px solid var(--gold);border-radius:var(--radius-lg);padding:2rem;margin:1.5rem 0;text-align:center}
+.cta-box h3{font-size:1.15rem;color:var(--navy);margin-bottom:.5rem}
+.cta-box p{font-size:.9rem;color:var(--gray-600);margin-bottom:1.25rem;line-height:1.6;max-width:500px;margin-left:auto;margin-right:auto}
+
+/* Footer */
+.footer{text-align:center;padding:2rem 1rem;color:var(--gray-400);font-size:.8rem;border-top:1px solid var(--gray-100);margin-top:2rem}
+
+/* Utility */
+.hidden{display:none!important}
+.text-center{text-align:center}
+.mt-1{margin-top:1rem}
+.mb-1{margin-bottom:1rem}
+
+/* Print */
+@media print{
+  .header{position:static;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+  .nav-buttons,.btn,.progress-wrap,.upsell-box,.cta-box{display:none}
+  .section{break-inside:avoid;box-shadow:none;border:1px solid #ddd}
+  body{background:white}
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-brand">
+    <div>
+      <div class="header-logo">PAI <span>Consulting</span></div>
+      <div class="header-tagline">Aviation Safety &amp; Compliance</div>
+    </div>
+  </div>
+  <div class="header-badge">SMS Readiness Tool</div>
+</header>
+
+<main class="container">
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-label">
+      <span id="progressText">Getting Started</span>
+      <span id="progressPct">0%</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <!-- Welcome Screen -->
+  <div class="section" id="screenWelcome">
+    <div class="welcome">
+      <h1>SMS Compliance Readiness Assessment</h1>
+      <p>Evaluate your organization's Safety Management System maturity against FAA Part 5 requirements. Get a prioritized gap analysis in under 10 minutes.</p>
+      <div class="welcome-features">
+        <div class="feature-card">
+          <div class="feature-icon">&#9974;</div>
+          <div><h3>29 Targeted Questions</h3><p>Across 5 SMS pillars aligned to 14 CFR Part 5</p></div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#9881;</div>
+          <div><h3>Weighted Scoring</h3><p>Priority-weighted maturity assessment</p></div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#128202;</div>
+          <div><h3>Visual Report</h3><p>Pillar scores, tier rating, and bar chart</p></div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#128203;</div>
+          <div><h3>Gap Priorities</h3><p>Top gaps ranked with Part 5 citations</p></div>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-lg" onclick="startAssessment()">Begin Assessment &rarr;</button>
+      <p class="welcome-note">No data is sent to any server. Everything runs locally in your browser.</p>
+    </div>
+  </div>
+
+  <!-- Assessment Sections (generated by JS) -->
+  <div id="assessmentContainer"></div>
+
+  <!-- Results Screen -->
+  <div class="section hidden" id="screenResults"></div>
+</main>
+
+<footer class="footer">
+  &copy; 2026 PAI Consulting. This tool provides a general readiness indication and does not constitute regulatory guidance.
+</footer>
+
+<script>
+/* ===== DATA MODEL ===== */
+const MATURITY_LEVELS = [
+  { value: 0, short: "Not Started", label: "0\nNot Started" },
+  { value: 1, short: "Planned",     label: "1\nPlanned" },
+  { value: 2, short: "Partial",     label: "2\nPartial" },
+  { value: 3, short: "Full",        label: "3\nFull" }
+];
+
+const SECTIONS = [
+  {
+    id: "profile",
+    title: "Operator Profile",
+    desc: "Tell us about your operation so we can contextualize your results.",
+    scored: false,
+    fields: [
+      { id: "op_type", label: "Operation Type", type: "select", options: ["Part 135","Part 145","FBO","Other"], required: true },
+      { id: "emp_count", label: "Employee Count", type: "select", options: ["1-25","26-100","101-500","500+"], required: true },
+      { id: "sms_status", label: "Current SMS Status", type: "select", options: ["No SMS program","Planning phase","Partially implemented","Fully implemented"], required: true },
+      { id: "driver", label: "Primary Compliance Driver", type: "select", options: ["Regulatory requirement","Customer/contract requirement","Organizational initiative","Insurance/risk management"], required: true },
+      { id: "name", label: "Name (optional)", type: "text", required: false },
+      { id: "email", label: "Email (optional)", type: "text", required: false }
+    ]
+  },
+  {
+    id: "policy",
+    title: "Safety Policy & Objectives",
+    desc: "FAA 14 CFR Part 5, Subpart B — Management commitment and safety accountability.",
+    scored: true,
+    questions: [
+      { id: "p1", text: "Does your organization have a documented safety policy signed by the accountable executive?", weight: "HIGH", citation: "§5.21" },
+      { id: "p2", text: "Are safety objectives defined with measurable targets?", weight: "HIGH", citation: "§5.21(b)" },
+      { id: "p3", text: "Is an accountable executive identified with authority over SMS resources?", weight: "HIGH", citation: "§5.25" },
+      { id: "p4", text: "Are SMS roles and responsibilities clearly designated across the organization?", weight: "MED", citation: "§5.25(b)" },
+      { id: "p5", text: "Is there a policy for confidential safety reporting without reprisal?", weight: "MED", citation: "§5.21(c)" },
+      { id: "p6", text: "Are emergency response procedures documented and tested?", weight: "LOW", citation: "§5.27" }
+    ]
+  },
+  {
+    id: "srm",
+    title: "Safety Risk Management",
+    desc: "FAA 14 CFR Part 5, Subpart C — Hazard identification and risk assessment processes.",
+    scored: true,
+    questions: [
+      { id: "r1", text: "Is there a formal process for identifying hazards across all operational areas?", weight: "HIGH", citation: "§5.51" },
+      { id: "r2", text: "Does hazard identification cover system design, human factors, and procedural changes?", weight: "HIGH", citation: "§5.51(b)" },
+      { id: "r3", text: "Is there a documented risk assessment methodology (e.g., severity × likelihood matrix)?", weight: "HIGH", citation: "§5.53" },
+      { id: "r4", text: "Are risk controls identified and implemented for each assessed hazard?", weight: "HIGH", citation: "§5.55(a)" },
+      { id: "r5", text: "Is there a process to evaluate risk controls for effectiveness?", weight: "MED", citation: "§5.55(c)" },
+      { id: "r6", text: "Are SRM processes applied to operational changes before implementation?", weight: "MED", citation: "§5.51(c)" },
+      { id: "r7", text: "Is there a system for tracking open hazards and mitigations to closure?", weight: "LOW", citation: "§5.55(b)" }
+    ]
+  },
+  {
+    id: "sa",
+    title: "Safety Assurance",
+    desc: "FAA 14 CFR Part 5, Subpart D — Monitoring, auditing, and continuous improvement.",
+    scored: true,
+    questions: [
+      { id: "a1", text: "Are safety performance indicators (SPIs) defined and monitored?", weight: "HIGH", citation: "§5.71" },
+      { id: "a2", text: "Is there a confidential employee safety reporting system in use?", weight: "HIGH", citation: "§5.71(a)(3)" },
+      { id: "a3", text: "Are internal safety audits conducted on a scheduled basis?", weight: "HIGH", citation: "§5.73" },
+      { id: "a4", text: "Is there a process for investigating safety events and near-misses?", weight: "MED", citation: "§5.71(a)(2)" },
+      { id: "a5", text: "Are root cause analyses performed and tracked to corrective action?", weight: "MED", citation: "§5.75(b)" },
+      { id: "a6", text: "Is there a management review process for assessing SMS effectiveness?", weight: "MED", citation: "§5.75(c)" },
+      { id: "a7", text: "Are continuous improvement actions documented and verified?", weight: "LOW", citation: "§5.75(a)" }
+    ]
+  },
+  {
+    id: "sp",
+    title: "Safety Promotion",
+    desc: "FAA 14 CFR Part 5, Subpart E — Training, communication, and safety culture.",
+    scored: true,
+    questions: [
+      { id: "s1", text: "Do all employees receive initial and recurrent SMS training?", weight: "HIGH", citation: "§5.91" },
+      { id: "s2", text: "Is SMS training tailored to specific roles and responsibilities?", weight: "MED", citation: "§5.91(b)" },
+      { id: "s3", text: "Are safety lessons learned regularly communicated across the organization?", weight: "MED", citation: "§5.93" },
+      { id: "s4", text: "Is there a process for disseminating safety-critical information?", weight: "MED", citation: "§5.93(a)" },
+      { id: "s5", text: "Does leadership actively participate in safety promotion activities?", weight: "LOW", citation: "§5.93(b)" }
+    ]
+  },
+  {
+    id: "doc",
+    title: "SMS Documentation & Records",
+    desc: "FAA 14 CFR Part 5, Subpart F — Documentation, records, and system integration.",
+    scored: true,
+    questions: [
+      { id: "d1", text: "Is there a single, comprehensive SMS manual or equivalent documentation?", weight: "HIGH", citation: "§5.95" },
+      { id: "d2", text: "Does the documentation describe the SMS scope, processes, and responsibilities?", weight: "HIGH", citation: "§5.95(a)" },
+      { id: "d3", text: "Is there a document control process for SMS records?", weight: "MED", citation: "§5.97" },
+      { id: "d4", text: "Are SMS records retained in accordance with regulatory requirements?", weight: "LOW", citation: "§5.97(b)" }
+    ]
+  }
+];
+
+const WEIGHT_MULTIPLIER = { HIGH: 2, MED: 1.5, LOW: 1 };
+const TIER_DEFS = [
+  { max: 40,  name: "Critical Gaps",  cls: "tier-critical",   color: "#c0392b" },
+  { max: 65,  name: "Developing",     cls: "tier-developing",  color: "#d4a017" },
+  { max: 85,  name: "Maturing",       cls: "tier-maturing",    color: "#2980b9" },
+  { max: 100, name: "Advanced",       cls: "tier-advanced",    color: "#27ae60" }
+];
+
+/* ===== STATE ===== */
+let currentScreen = 0; // 0=welcome, 1..N=sections, N+1=results
+const totalScreens = SECTIONS.length + 2; // welcome + sections + results
+const answers = {};
+
+/* ===== RENDERING ===== */
+function buildAssessment() {
+  const container = document.getElementById("assessmentContainer");
+  container.innerHTML = "";
+  SECTIONS.forEach((sec, idx) => {
+    const div = document.createElement("div");
+    div.className = "section hidden";
+    div.id = "screen_" + sec.id;
+    div.innerHTML = buildSectionHTML(sec, idx);
+    container.appendChild(div);
+  });
+}
+
+function buildSectionHTML(sec, idx) {
+  let html = `<div class="section-title"><span class="section-number">${idx + 1}</span>${sec.title}</div>`;
+  html += `<div class="section-desc">${sec.desc}</div>`;
+
+  if (!sec.scored) {
+    // Profile fields
+    sec.fields.forEach(f => {
+      html += `<div class="field">`;
+      html += `<label class="field-label" for="${f.id}">${f.label}${f.required ? '' : ''}</label>`;
+      if (f.type === "select") {
+        html += `<select class="select-input" id="${f.id}" data-field="${f.id}"><option value="">— Select —</option>`;
+        f.options.forEach(o => { html += `<option value="${o}">${o}</option>`; });
+        html += `</select>`;
+      } else {
+        html += `<input class="input" type="text" id="${f.id}" data-field="${f.id}" placeholder="">`;
+      }
+      html += `</div>`;
+    });
+  } else {
+    // Scored questions
+    sec.questions.forEach(q => {
+      const wCls = q.weight.toLowerCase();
+      html += `<div class="field">`;
+      html += `<label class="field-label">${q.text}<span class="weight-badge ${wCls}">${q.weight}</span></label>`;
+      html += `<div class="field-citation">14 CFR ${q.citation}</div>`;
+      html += `<div class="maturity-group">`;
+      MATURITY_LEVELS.forEach(m => {
+        const uid = q.id + "_" + m.value;
+        html += `<div class="maturity-option">`;
+        html += `<input type="radio" name="${q.id}" id="${uid}" value="${m.value}" data-question="${q.id}" onchange="recordAnswer('${q.id}',${m.value})">`;
+        html += `<label for="${uid}"><span class="score-num">${m.value}</span>${m.short}</label>`;
+        html += `</div>`;
+      });
+      html += `</div></div>`;
+    });
+  }
+
+  // Nav buttons
+  html += `<div class="nav-buttons">`;
+  html += `<button class="btn btn-secondary" onclick="navigateTo(${idx})">&#8592; Back</button>`;
+  if (idx < SECTIONS.length - 1) {
+    html += `<button class="btn btn-primary" onclick="navigateTo(${idx + 2})">Continue &#8594;</button>`;
+  } else {
+    html += `<button class="btn btn-gold btn-lg" onclick="showResults()">View My Results &#8594;</button>`;
+  }
+  html += `</div>`;
+  return html;
+}
+
+/* ===== NAVIGATION ===== */
+function startAssessment() { navigateTo(1); }
+
+function navigateTo(screen) {
+  // Hide all
+  document.getElementById("screenWelcome").classList.add("hidden");
+  document.querySelectorAll("#assessmentContainer .section").forEach(s => s.classList.add("hidden"));
+  document.getElementById("screenResults").classList.add("hidden");
+
+  currentScreen = screen;
+
+  if (screen === 0) {
+    document.getElementById("screenWelcome").classList.remove("hidden");
+  } else if (screen <= SECTIONS.length) {
+    const sec = SECTIONS[screen - 1];
+    document.getElementById("screen_" + sec.id).classList.remove("hidden");
+  }
+
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function updateProgress() {
+  const pct = Math.round((currentScreen / (SECTIONS.length + 1)) * 100);
+  document.getElementById("progressFill").style.width = pct + "%";
+  document.getElementById("progressPct").textContent = pct + "%";
+  const labels = ["Getting Started", ...SECTIONS.map(s => s.title), "Results"];
+  document.getElementById("progressText").textContent = labels[currentScreen] || "";
+}
+
+/* ===== ANSWERS ===== */
+function recordAnswer(qid, val) {
+  answers[qid] = val;
+}
+
+/* ===== SCORING ===== */
+function computeScores() {
+  const pillarScores = [];
+  const allGaps = [];
+
+  SECTIONS.filter(s => s.scored).forEach(sec => {
+    let earned = 0, maxPts = 0;
+    sec.questions.forEach(q => {
+      const w = WEIGHT_MULTIPLIER[q.weight];
+      const ans = answers[q.id] !== undefined ? answers[q.id] : 0;
+      earned += ans * w;
+      maxPts += 3 * w;
+      const gap = 3 - ans;
+      if (gap > 0) {
+        allGaps.push({
+          question: q.text,
+          citation: q.citation,
+          weight: q.weight,
+          multiplier: w,
+          gap: gap,
+          score: ans,
+          pillar: sec.title,
+          priority: w * gap
+        });
+      }
+    });
+    const pct = maxPts > 0 ? (earned / maxPts) * 100 : 0;
+    pillarScores.push({ id: sec.id, title: sec.title, score: pct });
+  });
+
+  const overall = pillarScores.reduce((s, p) => s + p.score, 0) / pillarScores.length;
+  allGaps.sort((a, b) => b.priority - a.priority);
+
+  return { pillarScores, overall, gaps: allGaps };
+}
+
+function getTier(score) {
+  for (const t of TIER_DEFS) { if (score <= t.max) return t; }
+  return TIER_DEFS[TIER_DEFS.length - 1];
+}
+
+function barColor(score) { return getTier(score).color; }
+
+/* ===== RESULTS ===== */
+function showResults() {
+  const { pillarScores, overall, gaps } = computeScores();
+  const tier = getTier(overall);
+
+  let html = `<div class="results-header">
+    <h2>Your SMS Readiness Assessment</h2>
+    <div class="overall-score" style="color:${tier.color}">${Math.round(overall)}%</div>
+    <div class="tier-badge ${tier.cls}">${tier.name}</div>
+  </div>`;
+
+  // Profile summary
+  const opType = document.getElementById("op_type")?.value;
+  const empCount = document.getElementById("emp_count")?.value;
+  if (opType || empCount) {
+    html += `<p style="text-align:center;color:var(--gray-600);font-size:.85rem;margin-bottom:1.5rem">`;
+    if (opType) html += `${opType}`;
+    if (opType && empCount) html += ` · `;
+    if (empCount) html += `${empCount} employees`;
+    html += `</p>`;
+  }
+
+  // Pillar chart
+  html += `<h3 style="font-size:1rem;color:var(--navy);margin-bottom:.75rem">Pillar Scores</h3>`;
+  html += `<div class="pillar-chart">`;
+  pillarScores.forEach(p => {
+    const pct = Math.round(p.score);
+    const c = barColor(p.score);
+    html += `<div class="pillar-bar-row">
+      <div class="pillar-bar-label"><span>${p.title}</span><span>${pct}%</span></div>
+      <div class="pillar-bar-track"><div class="pillar-bar-fill" style="width:${pct}%;background:${c}">${pct > 15 ? '' : ''}</div></div>
+    </div>`;
+  });
+  html += `</div>`;
+
+  // Priority gaps
+  const topGaps = gaps.slice(0, 10);
+  if (topGaps.length > 0) {
+    html += `<h3 style="font-size:1rem;color:var(--navy);margin:1.5rem 0 .75rem">Top Priority Gaps</h3>`;
+    html += `<div class="gap-list">`;
+    topGaps.forEach((g, i) => {
+      const pCls = g.weight === "HIGH" ? "priority-high" : g.weight === "MED" ? "priority-med" : "priority-low";
+      html += `<div class="gap-item ${pCls}">
+        <div class="gap-rank">#${i + 1}</div>
+        <div class="gap-body">
+          <div class="gap-question">${g.question}</div>
+          <div class="gap-meta">
+            <span>14 CFR ${g.citation}</span>
+            <span>${g.pillar}</span>
+            <span>Weight: ${g.weight}</span>
+            <span>Current: ${g.score}/3</span>
+          </div>
+        </div>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  // --- TIER 2 UPSELL PLACEHOLDER ---
+  html += `<div class="upsell-box">
+    <h3>&#128274; Unlock Full AI-Powered Report</h3>
+    <p>Get a comprehensive, AI-generated gap analysis with tailored remediation steps,
+    implementation timelines, and regulatory cross-references specific to your operation.</p>
+    <div class="upsell-features">
+      <span class="upsell-feature">Detailed Remediation Plan</span>
+      <span class="upsell-feature">Implementation Timeline</span>
+      <span class="upsell-feature">Regulatory Cross-References</span>
+      <span class="upsell-feature">Resource Estimates</span>
+      <span class="upsell-feature">Priority Roadmap</span>
+    </div>
+    <button class="btn btn-gold btn-lg" disabled style="opacity:.7;cursor:not-allowed">Coming Soon</button>
+    <p class="upsell-lock">Tier 2 premium report — available in a future release.</p>
+  </div>`;
+
+  // --- CTA ---
+  html += `<div class="cta-box">
+    <h3>Ready to Close These Gaps?</h3>
+    <p>PAI Consulting offers a structured gap analysis engagement tailored to your operation.
+    Our aviation safety experts will help you build a compliant, effective SMS from the ground up.</p>
+    <a href="#" class="btn btn-primary btn-lg">Schedule a Consultation</a>
+  </div>`;
+
+  // Restart
+  html += `<div class="text-center mt-1">
+    <button class="btn btn-secondary" onclick="restart()">&#8634; Start Over</button>
+  </div>`;
+
+  const resultsDiv = document.getElementById("screenResults");
+  resultsDiv.innerHTML = html;
+
+  // Show results screen
+  document.getElementById("screenWelcome").classList.add("hidden");
+  document.querySelectorAll("#assessmentContainer .section").forEach(s => s.classList.add("hidden"));
+  resultsDiv.classList.remove("hidden");
+
+  currentScreen = SECTIONS.length + 1;
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function restart() {
+  Object.keys(answers).forEach(k => delete answers[k]);
+  document.querySelectorAll("input[type=radio]").forEach(r => r.checked = false);
+  document.querySelectorAll("select").forEach(s => s.selectedIndex = 0);
+  document.querySelectorAll("input[type=text]").forEach(i => i.value = "");
+  navigateTo(0);
+}
+
+/* ===== INIT ===== */
+buildAssessment();
+</script>
+</body>
+</html>
