@@ -131,13 +131,26 @@ body{font-family:var(--font-sans);color:var(--gray-800);background:var(--off-whi
 .gap-meta{font-size:.75rem;color:var(--gray-600)}
 .gap-meta span{margin-right:.75rem}
 
-/* Upsell section */
+/* Upsell / Tier 2 section */
 .upsell-box{background:linear-gradient(135deg,var(--navy),var(--navy-light));color:var(--white);border-radius:var(--radius-lg);padding:2rem;margin:2rem 0;text-align:center}
 .upsell-box h3{font-size:1.2rem;margin-bottom:.5rem;color:var(--sky)}
 .upsell-box p{font-size:.95rem;color:var(--gray-200);margin-bottom:1.25rem;line-height:1.6}
 .upsell-features{display:flex;flex-wrap:wrap;justify-content:center;gap:.75rem;margin-bottom:1.5rem}
 .upsell-feature{background:rgba(255,255,255,.1);padding:.35rem .75rem;border-radius:20px;font-size:.8rem;color:var(--gray-200)}
 .upsell-lock{font-size:.75rem;color:var(--gray-400);margin-top:.75rem}
+
+/* Tier 2 report */
+.tier2-loading{text-align:center;padding:2rem;color:var(--navy)}
+.tier2-loading .spinner{display:inline-block;width:28px;height:28px;border:3px solid var(--gray-200);border-top-color:var(--sky);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:.75rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+.tier2-report{background:var(--white);border:2px solid var(--sky);border-radius:var(--radius-lg);padding:2rem;margin:2rem 0;box-shadow:var(--shadow-md)}
+.tier2-report h3{font-size:1.1rem;color:var(--navy);margin:1.25rem 0 .5rem;padding-bottom:.35rem;border-bottom:2px solid var(--sky)}
+.tier2-report h3:first-child{margin-top:0}
+.tier2-report p{font-size:.9rem;color:var(--gray-800);line-height:1.7;margin-bottom:.75rem}
+.tier2-report ul{margin:.5rem 0 1rem 1.25rem;font-size:.9rem;color:var(--gray-800);line-height:1.7}
+.tier2-report li{margin-bottom:.35rem}
+.tier2-report strong{color:var(--navy)}
+.tier2-error{text-align:center;padding:1.5rem;color:var(--red);background:var(--red-bg);border-radius:var(--radius);margin:1.5rem 0;font-size:.9rem}
 
 /* CTA */
 .cta-box{background:var(--white);border:2px solid var(--sky);border-radius:var(--radius-lg);padding:2rem;margin:1.5rem 0;text-align:center}
@@ -225,6 +238,9 @@ body{font-family:var(--font-sans);color:var(--gray-800);background:var(--off-whi
 </footer>
 
 <script>
+/* ===== WORKER CONFIG ===== */
+const WORKER_URL = "https://YOUR-WORKER-SUBDOMAIN.workers.dev"; // Replace after Cloudflare deployment
+
 /* ===== DATA MODEL ===== */
 const MATURITY_LEVELS = [
   { value: 0, short: "Not Started", label: "0\nNot Started" },
@@ -530,9 +546,9 @@ function showResults() {
     html += `</div>`;
   }
 
-  // --- TIER 2 UPSELL PLACEHOLDER ---
-  html += `<div class="upsell-box">
-    <h3>&#128274; Unlock Full AI-Powered Report</h3>
+  // --- TIER 2 AI REPORT ---
+  html += `<div class="upsell-box" id="tier2Upsell">
+    <h3>Unlock Your Full AI Report</h3>
     <p>Get a comprehensive, AI-generated gap analysis with tailored remediation steps,
     implementation timelines, and regulatory cross-references specific to your operation.</p>
     <div class="upsell-features">
@@ -542,9 +558,10 @@ function showResults() {
       <span class="upsell-feature">Resource Estimates</span>
       <span class="upsell-feature">Priority Roadmap</span>
     </div>
-    <button class="btn btn-gold btn-lg" disabled style="opacity:.7;cursor:not-allowed">Coming Soon</button>
-    <p class="upsell-lock">Tier 2 premium report — available in a future release.</p>
-  </div>`;
+    <button class="btn btn-gold btn-lg" id="tier2Btn" onclick="generateTier2Report()">Generate My Full Report</button>
+    <p class="upsell-lock">Powered by AI — personalized to your assessment results.</p>
+  </div>
+  <div id="tier2Container"></div>`;
 
   // --- CTA ---
   html += `<div class="cta-box">
@@ -578,6 +595,83 @@ function restart() {
   document.querySelectorAll("select").forEach(s => s.selectedIndex = 0);
   document.querySelectorAll("input[type=text]").forEach(i => i.value = "");
   navigateTo(0);
+}
+
+/* ===== TIER 2 AI REPORT ===== */
+async function generateTier2Report() {
+  const btn = document.getElementById("tier2Btn");
+  const container = document.getElementById("tier2Container");
+  const upsell = document.getElementById("tier2Upsell");
+
+  // Disable button, show loading
+  btn.disabled = true;
+  btn.style.opacity = ".5";
+  btn.style.cursor = "not-allowed";
+  btn.textContent = "Generating\u2026";
+
+  container.innerHTML = `<div class="tier2-loading">
+    <div class="spinner"></div>
+    <p>Generating your personalized report\u2026<br>
+    <span style="font-size:.8rem;color:var(--gray-600)">This may take 15\u201330 seconds.</span></p>
+  </div>`;
+
+  // Gather assessment data
+  const { pillarScores, overall, gaps } = computeScores();
+  const tier = getTier(overall);
+
+  const profile = {
+    op_type: document.getElementById("op_type")?.value || "",
+    emp_count: document.getElementById("emp_count")?.value || "",
+    sms_status: document.getElementById("sms_status")?.value || "",
+    driver: document.getElementById("driver")?.value || "",
+  };
+
+  const payload = {
+    profile,
+    pillarScores,
+    overall,
+    tier: tier.name,
+    gaps: gaps.slice(0, 10).map(g => ({
+      question: g.question,
+      citation: g.citation,
+      weight: g.weight,
+      score: g.score,
+      pillar: g.pillar,
+    })),
+  };
+
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok || data.error) {
+      throw new Error(data.error || "Report generation failed.");
+    }
+
+    // Hide the upsell box, show the report
+    upsell.classList.add("hidden");
+    container.innerHTML = `<div class="tier2-report">
+      <h3 style="margin-top:0;border-bottom:none;font-size:1.25rem;text-align:center;color:var(--navy)">
+        AI-Powered Compliance Gap Analysis
+      </h3>
+      ${data.report}
+    </div>`;
+  } catch (err) {
+    container.innerHTML = `<div class="tier2-error">
+      <strong>Unable to generate report:</strong> ${err.message}<br>
+      Please try again or contact <a href="mailto:info@paiconsulting.com">info@paiconsulting.com</a> for assistance.
+    </div>`;
+    // Re-enable button for retry
+    btn.disabled = false;
+    btn.style.opacity = "1";
+    btn.style.cursor = "pointer";
+    btn.textContent = "Try Again";
+  }
 }
 
 /* ===== INIT ===== */
