@@ -7,11 +7,11 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --navy:#1a2744;--navy-light:#243354;--slate:#3d4f6f;
-  --sky:#4a90d9;--sky-light:#6ba3e0;
-  --gold:#d4a843;--gold-light:#e0bc6a;
+  --navy:#002F69;--navy-light:#003d80;--slate:#1a4a8a;
+  --sky:#8FD7FF;--sky-light:#b0e4ff;
+  --gold:#8FD7FF;--gold-light:#b0e4ff;
   --white:#ffffff;--off-white:#f4f6f9;--gray-100:#e8ecf1;
-  --gray-200:#d1d8e3;--gray-400:#8d99ae;--gray-600:#4a5568;--gray-800:#2d3748;
+  --gray-200:#d1d8e3;--gray-400:#DDDBE2;--gray-600:#4a5568;--gray-800:#2d3748;
   --red:#c0392b;--red-bg:#fdeaea;--red-border:#e6a0a0;
   --amber:#d4a017;--amber-bg:#fef9e7;--amber-border:#e0c97a;
   --blue:#2980b9;--blue-bg:#e8f0fe;--blue-border:#a0c4e8;
@@ -28,8 +28,8 @@ body{font-family:var(--font-sans);color:var(--gray-800);background:var(--off-whi
 /* Header */
 .header{background:var(--navy);color:var(--white);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow-md)}
 .header-brand{display:flex;align-items:center;gap:.75rem}
-.header-logo{font-size:1.5rem;font-weight:700;letter-spacing:.5px}
-.header-logo span{color:var(--gold)}
+.header-logo{display:flex;align-items:center;gap:.6rem;font-size:1.5rem;font-weight:700;letter-spacing:.5px;color:var(--white)}
+.header-logo img{height:36px;width:auto}
 .header-tagline{font-size:.8rem;color:var(--gray-400);margin-top:2px}
 .header-badge{background:var(--sky);color:var(--white);font-size:.7rem;font-weight:600;padding:.25rem .75rem;border-radius:20px;letter-spacing:.5px;text-transform:uppercase}
 
@@ -80,12 +80,12 @@ body{font-family:var(--font-sans);color:var(--gray-800);background:var(--off-whi
 
 /* Buttons */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.7rem 1.5rem;border:none;border-radius:var(--radius);font-size:.95rem;font-weight:600;cursor:pointer;transition:all .2s;font-family:var(--font-sans)}
-.btn-primary{background:var(--sky);color:var(--white)}
-.btn-primary:hover{background:var(--slate)}
+.btn-primary{background:var(--sky);color:var(--navy)}
+.btn-primary:hover{background:var(--sky-light)}
 .btn-secondary{background:var(--white);color:var(--navy);border:2px solid var(--gray-200)}
 .btn-secondary:hover{border-color:var(--sky);background:var(--blue-bg)}
-.btn-gold{background:var(--gold);color:var(--white)}
-.btn-gold:hover{background:var(--gold-light)}
+.btn-gold{background:var(--sky);color:var(--navy)}
+.btn-gold:hover{background:var(--sky-light)}
 .btn-lg{padding:.85rem 2rem;font-size:1.05rem}
 .nav-buttons{display:flex;justify-content:space-between;margin-top:1.5rem;gap:1rem}
 
@@ -133,14 +133,14 @@ body{font-family:var(--font-sans);color:var(--gray-800);background:var(--off-whi
 
 /* Upsell section */
 .upsell-box{background:linear-gradient(135deg,var(--navy),var(--navy-light));color:var(--white);border-radius:var(--radius-lg);padding:2rem;margin:2rem 0;text-align:center}
-.upsell-box h3{font-size:1.2rem;margin-bottom:.5rem;color:var(--gold)}
+.upsell-box h3{font-size:1.2rem;margin-bottom:.5rem;color:var(--sky)}
 .upsell-box p{font-size:.95rem;color:var(--gray-200);margin-bottom:1.25rem;line-height:1.6}
 .upsell-features{display:flex;flex-wrap:wrap;justify-content:center;gap:.75rem;margin-bottom:1.5rem}
 .upsell-feature{background:rgba(255,255,255,.1);padding:.35rem .75rem;border-radius:20px;font-size:.8rem;color:var(--gray-200)}
 .upsell-lock{font-size:.75rem;color:var(--gray-400);margin-top:.75rem}
 
 /* CTA */
-.cta-box{background:var(--white);border:2px solid var(--gold);border-radius:var(--radius-lg);padding:2rem;margin:1.5rem 0;text-align:center}
+.cta-box{background:var(--white);border:2px solid var(--sky);border-radius:var(--radius-lg);padding:2rem;margin:1.5rem 0;text-align:center}
 .cta-box h3{font-size:1.15rem;color:var(--navy);margin-bottom:.5rem}
 .cta-box p{font-size:.9rem;color:var(--gray-600);margin-bottom:1.25rem;line-height:1.6;max-width:500px;margin-left:auto;margin-right:auto}
 
@@ -167,7 +167,7 @@ body{font-family:var(--font-sans);color:var(--gray-800);background:var(--off-whi
 <header class="header">
   <div class="header-brand">
     <div>
-      <div class="header-logo">PAI <span>Consulting</span></div>
+      <div class="header-logo"><img src="assets/PAI_P_blue_gray.png" alt="PAI Consulting logo mark">PAI Consulting</div>
       <div class="header-tagline">Aviation Safety &amp; Compliance</div>
     </div>
   </div>
@@ -551,7 +551,7 @@ function showResults() {
     <h3>Ready to Close These Gaps?</h3>
     <p>PAI Consulting offers a structured gap analysis engagement tailored to your operation.
     Our aviation safety experts will help you build a compliant, effective SMS from the ground up.</p>
-    <a href="#" class="btn btn-primary btn-lg">Schedule a Consultation</a>
+    <a href="mailto:info@paiconsulting.com" class="btn btn-primary btn-lg">Schedule a Consultation</a>
   </div>`;
 
   // Restart
